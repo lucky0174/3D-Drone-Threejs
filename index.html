@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>3D-Drone</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="./assets/favicon.png" type="image/x-icon">
+  <style>
+    body {
+      margin: 0px;
+      background: linear-gradient(48deg, rgba(0, 0, 0, 1) 0%, rgba(56, 56, 56, 1) 95%);
+    }
+  </style>
+</head>
+
+<body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js" crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
+  <script type="module">
+
+    import * as THREE from './assets/JS/three.module.js';
+    import { OrbitControls } from './assets/JS/OrbitControls.js';
+    import { GLTFLoader } from './assets/JS/GLTFLoader.js';
+    import { RGBELoader } from './assets/JS/RGBELoader.js';
+
+    let camera, scene, renderer;
+    let hlight, directionalLight, light, light2, light3, light4;
+
+    init();
+    render();
+
+    function init() {
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.25, 20);
+      camera.position.z = 3.5;
+      camera.position.x = 1.5;
+      camera.position.y = 2.5;
+
+      scene = new THREE.Scene();
+      const gui = new dat.GUI()
+
+      let url = './assets/drone/scene.gltf';
+
+      // ========================================
+      // =================Lights=================
+      // ========================================
+      hlight = new THREE.AmbientLight(0x404040, 0.4);
+      scene.add(hlight);
+
+      directionalLight = new THREE.DirectionalLight(0xffffff, .6);
+      directionalLight.position.set(0, 1, 0);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
+      // '#1B2430'
+      // 0xc4c4c4
+      light = new THREE.PointLight(0xc4c4c4, .6);
+      light.position.set(0, 300, 500);
+      scene.add(light);
+
+      light2 = new THREE.PointLight(0xc4c4c4, .6);
+      light2.position.set(500, 100, 0);
+      scene.add(light2);
+
+      light3 = new THREE.PointLight(0xc4c4c4, .6);
+      light3.position.set(0, 100, -500);
+      scene.add(light3);
+
+      light4 = new THREE.PointLight(0xc4c4c4, .6);
+      light4.position.set(-500, 300, 500);
+      scene.add(light4);
+
+      // ========================================
+      // ===========Light GUI Controls===========
+      // ========================================
+      const ambLight = gui.addFolder('Ambient Light')
+      ambLight.add(hlight, 'intensity', -10, 10, 0.01)
+
+      const direcLight = gui.addFolder('Directional Light')
+      direcLight.add(directionalLight, 'intensity', -10, 10, 0.01)
+      direcLight.add(directionalLight.position, 'x', -10, 10, 0.01)
+      direcLight.add(directionalLight.position, 'y', -10, 10, 0.01)
+      direcLight.add(directionalLight.position, 'z', -10, 10, 0.01)
+
+      const firstLight = gui.addFolder('First Light')
+      firstLight.add(light, 'intensity', -10, 10, 0.01)
+      firstLight.add(light.position, 'x', -10, 10, 0.01)
+      firstLight.add(light.position, 'y', -10, 10, 0.01)
+      firstLight.add(light.position, 'z', -10, 10, 0.01)
+
+      const secondLight = gui.addFolder('Second Light')
+      secondLight.add(light2, 'intensity', -10, 10, 0.01)
+      secondLight.add(light2.position, 'x', -10, 10, 0.01)
+      secondLight.add(light2.position, 'y', -10, 10, 0.01)
+      secondLight.add(light2.position, 'z', -10, 10, 0.01)
+
+      const thirdLight = gui.addFolder('Third Light')
+      thirdLight.add(light3, 'intensity', -10, 10, 0.01)
+      thirdLight.add(light3.position, 'x', -10, 10, 0.01)
+      thirdLight.add(light3.position, 'y', -10, 10, 0.01)
+      thirdLight.add(light3.position, 'z', -10, 10, 0.01)
+
+      const fourthLight = gui.addFolder('Fourth Light')
+      fourthLight.add(light, 'intensity', -10, 10, 0.01)
+      fourthLight.add(light4.position, 'x', -10, 10, 0.01)
+      fourthLight.add(light4.position, 'y', -10, 10, 0.01)
+      fourthLight.add(light4.position, 'z', -10, 10, 0.01)
+
+      // ====================================
+      // =====Background With GLTFLoader=====
+      // ====================================
+
+      // new RGBELoader()
+      //   .load('env.hdr', function (texture) {
+      //     texture.mapping = THREE.EquirectangularReflectionMapping;
+      //     scene.environment = texture;
+      //     // scene.background = texture;
+
+      //     render();
+
+      //     const loader = new GLTFLoader();
+      //     loader.load(url, function (gltf) {
+      //       scene.add(gltf.scene);
+      //       render();
+      //     });
+      //   });
+
+      // ====================================
+      // ==============GLTFLoader============
+      // ====================================
+      const loader = new GLTFLoader();
+      loader.load(url, function (gltf) {
+        scene.add(gltf.scene);
+        render();
+      });
+
+      // ====================================
+      // ==============Renderer==============
+      // ====================================
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      // renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1;
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      document.body.append(renderer.domElement);
+
+      // ====================================
+      // ===========Orbit Controls===========
+      // ====================================
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.addEventListener('change', render); // use if there is no animation loop
+      controls.minDistance = 3.3;
+      controls.maxDistance = 7;
+      controls.target.set(0, 0, - 0.2);
+      controls.update();
+      window.addEventListener('resize', onWindowResize);
+
+    }
+
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      render();
+    }
+
+    function render() {
+      renderer.render(scene, camera);
+    }
+
+  </script>
+
+</body>
+
+</html>
