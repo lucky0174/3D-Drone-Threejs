@@ -16,8 +16,8 @@
 </head>
 
 <body>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js" crossorigin="anonymous"
-    referrerpolicy="no-referrer"></script>
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js" crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script> -->
   <script type="module">
 
     import * as THREE from './assets/JS/three.module.js';
@@ -38,14 +38,14 @@
       camera.position.y = 2.5;
 
       scene = new THREE.Scene();
-      const gui = new dat.GUI()
+      // const gui = new dat.GUI()
 
       let url = './assets/drone/scene.gltf';
 
       // ========================================
       // =================Lights=================
       // ========================================
-      hlight = new THREE.AmbientLight(0x404040, 0.4);
+      hlight = new THREE.AmbientLight(0x909090, 0.4);
       scene.add(hlight);
 
       directionalLight = new THREE.DirectionalLight(0xffffff, .6);
@@ -110,20 +110,18 @@
       // =====Background With GLTFLoader=====
       // ====================================
 
-      // new RGBELoader()
-      //   .load('env.hdr', function (texture) {
-      //     texture.mapping = THREE.EquirectangularReflectionMapping;
-      //     scene.environment = texture;
-      //     // scene.background = texture;
+      new RGBELoader()
+        .load('https://threejs.org/examples/textures/equirectangular/venice_sunset_1k.hdr', function (texture) {
+          texture.mapping = THREE.EquirectangularReflectionMapping;
+          scene.background = texture;
+          scene.environment = texture;
 
-      //     render();
-
-      //     const loader = new GLTFLoader();
-      //     loader.load(url, function (gltf) {
-      //       scene.add(gltf.scene);
-      //       render();
-      //     });
-      //   });
+          const loader = new GLTFLoader();
+          loader.load(url, function (gltf) {
+        scene.add(gltf.scene);
+        render();
+          });
+        });
 
       // ====================================
       // ==============GLTFLoader============
